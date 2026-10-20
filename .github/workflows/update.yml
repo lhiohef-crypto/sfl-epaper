@@ -1,0 +1,43 @@
+name: Update SFL result image
+
+on:
+  schedule:
+    # UTC 表記。JST は +9 時間
+    #   火 15:00 UTC = 水 00:00 JST / 火 18:00 UTC = 水 03:00 JST
+    #   金 15:00 UTC = 土 00:00 JST / 金 18:00 UTC = 土 03:00 JST
+    # 試合終了は 22時頃(JST)なので、その後に2回走らせて取りこぼしを防ぐ
+    - cron: "0 15,18 * * 2,5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Render
+        run: python render.py
+
+      - name: Commit if changed
+        run: |
+          # 画像はフッタの更新時刻が毎回変わるので判定に使えない。
+          # API データ(cache.json)が変わったときだけコミットする
+          if [ -z "$(git status --porcelain cache.json)" ]; then
+            echo "データに変更なし。コミットをスキップします"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add preview.png sfl.bin cache.json
+          git commit -m "chore: update result image ($(TZ=Asia/Tokyo date '+%Y-%m-%d %H:%M JST'))"
+          git push

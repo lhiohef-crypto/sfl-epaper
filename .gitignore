@@ -1,0 +1,20 @@
+__pycache__/
+*.pyc
+
+# 開発用の確認画像
+preview_2x.png
+logo_compare.png
+logo_final.png
+logo_th.png
+winner_compare.png
+dng_check.png
+
+# WiFi パスワードを書くので公開しない。雛形は pico/config.example.py
+pico/config.py
+
+# 未使用のフォント一式（render.py はルートの NotoSansJP-*.ttf を使う）
+Noto_Sans_JP/
+
+# 旧ロゴの退避
+logos/_prev/
+logos/dng_prev.png
