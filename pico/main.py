@@ -29,8 +29,12 @@ def log(msg):
 # ---------------------------------------------------------------- WiFi
 
 def wifi_connect():
+    import rp2
+    rp2.country("JP")
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
+    # 省電力モードのままだと接続が status=1 で止まることがある
+    wlan.config(pm=0xa11140)
     if not wlan.isconnected():
         log("WiFi 接続中: {}".format(config.WIFI_SSID))
         wlan.connect(config.WIFI_SSID, config.WIFI_PASS)
