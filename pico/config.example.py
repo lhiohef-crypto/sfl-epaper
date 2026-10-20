@@ -1,11 +1,10 @@
-# config.py -- 環境ごとの設定。これだけ書き換える。
+# config.py の雛形。config.py という名前でコピーして WiFi を書き込む。
+# config.py は WiFi パスワードを含むので .gitignore で除外している。
 
 WIFI_SSID = "あなたのSSID"
 WIFI_PASS = "あなたのパスワード"
 
-# GitHub に push したあとの raw URL に差し替える。
-# 例: https://raw.githubusercontent.com/miyagi/sfl-epaper/main/sfl.bin
-BIN_URL = "https://raw.githubusercontent.com/USER/REPO/main/sfl.bin"
+BIN_URL = "https://raw.githubusercontent.com/lhiohef-crypto/sfl-epaper/main/sfl.bin"
 
 # 次に起きるまでの時間(分)。6時間ごとなら 360。
 # 火・金の深夜に Actions が更新するので、6時間おきに見に行けば十分間に合う。

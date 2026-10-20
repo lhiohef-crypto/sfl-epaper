@@ -8,23 +8,28 @@ Waveshare Pico-ePaper-4.2 (400×300 白黒) に自動表示する。
 **動いているもの**
 - API から結果を取得して 400×300 の1bit画像を生成するところまで完成
 - 実機表示も成功済み（2026-09-11、Division S 第2節を表示）
-- GitHub Actions のワークフローファイルは作成済み（未稼働）
+- リポジトリ公開済み: https://github.com/lhiohef-crypto/sfl-epaper （Public）
+- Actions は手動実行で動作確認済み（2026-10-20）。cron で自動稼働中
+- raw URL から `sfl.bin`（15000 byte）が取れることを確認済み:
+  `https://raw.githubusercontent.com/lhiohef-crypto/sfl-epaper/main/sfl.bin`
 
 **止まっているもの**
-- **git リポジトリが未作成。** これが最大のブロッカー。
-  Pico は `raw.githubusercontent.com` から画像を取りに行く設計なので、
-  リポジトリが無いと自動化が始まらない
-- `cache.json` / `sfl.bin` が 2026-09-01（Division S 第2節）で止まっている
 - Pico 側は `show_bin.py`（手動・ローカルファイル表示）までしか動かしていない。
   `main.py`（WiFi 取得 → 自動更新）は未検証
 
 ## 最初にやること
 
-1. `python render.py` を実行して現在の結果に更新する
-   （後述の通り、このマシンからは API が普通に通る）
-2. git リポジトリを作って push する
-3. Actions を `workflow_dispatch` で手動実行して動作確認
-4. `pico/config.py` に WiFi と URL を書いて `main.py` を Pico へ
+1. `pico/config.py` に WiFi を書いて、まず `app.py` として Pico で手動実行
+   （URL は記入済み。config.py は gitignore 対象で、雛形は `config.example.py`）
+
+## git まわりのメモ
+
+- git / gh は `C:\Program Files\Git\cmd` と `C:\Program Files\GitHub CLI` にある。
+  エージェントのシェルでは PATH に無いことがあるので、通らなければ追加する
+- コミット作者は noreply アドレス（`345278613+lhiohef-crypto@users.noreply.github.com`）
+- Actions は **cache.json に差分があるときだけ** コミットする。
+  画像はフッタの更新時刻（JST）が毎回変わるので差分判定に使えない
+- `Noto_Sans_JP/` は未使用なので gitignore。使うのはルートの2つの ttf
 
 ## 環境
 
@@ -217,18 +222,17 @@ SFL の本節は毎週火曜・金曜。試合終了は22時頃なのでその�
 
 ## 残タスク
 
-1. **git リポジトリ作成 + 初回 push**（最優先。これが無いと自動化が始まらない）
-2. `cache.json` / `sfl.bin` を最新の節に更新
-3. Actions を手動実行して動作確認
-4. `pico/config.py` を埋めて `main.py` を Pico へ
+1. `pico/config.py` に WiFi を書いて `main.py` を Pico へ
    - **まず `app.py` という名前で手動実行すること。**
      `main.py` は電源投入で自動実行され、最後に `deepsleep` するので、
      失敗すると Thonny から触れなくなる
-5. ケース（3Dプリント）
-6. `fav` ロゴの差し替え（任意）
-7. 4試合目がある節への対応（現状3試合固定）、順位表の表示（未検討）
-8. 電源方式の決定
-9. 掃除: `pico/show_bin_main_ref.py` を削除、Pico 上の不要な `sfl.py` を削除
+2. ケース（3Dプリント）
+3. `fav` ロゴの差し替え（任意）
+4. 4試合目がある節への対応（現状3試合固定）、順位表の表示（未検討）
+5. 電源方式の決定
+6. 掃除: Pico 上の不要な `sfl.py` を削除
+7. workflow の `actions/checkout@v4` / `setup-python@v5` が Node 20 非推奨の警告。
+   今は動くが、いずれ新しいメジャー版へ上げる
 
 ## 進め方
 
