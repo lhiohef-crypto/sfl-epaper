@@ -13,14 +13,19 @@ Waveshare Pico-ePaper-4.2 (400×300 白黒) に自動表示する。
 - raw URL から `sfl.bin`（15000 byte）が取れることを確認済み:
   `https://raw.githubusercontent.com/lhiohef-crypto/sfl-epaper/main/sfl.bin`
 
-**止まっているもの**
-- Pico 側は `show_bin.py`（手動・ローカルファイル表示）までしか動かしていない。
-  `main.py`（WiFi 取得 → 自動更新）は未検証
+- Pico の `main.py`（WiFi → 取得 → 描画 → deepsleep）も実機で動作確認済み（2026-10-20）。
+  本番稼働中
 
-## 最初にやること
+## Pico のメモ
 
-1. `pico/config.py` に WiFi を書いて、まず `app.py` として Pico で手動実行
-   （URL は記入済み。config.py は gitignore 対象で、雛形は `config.example.py`）
+- WiFi は **2.4GHz の `HUMAX-22B81`** を使う。`-A` は 5GHz で Pico 2 W からは見えない
+  （status=-2 = SSID が見つからない）
+- `rp2.country("JP")` と `wlan.config(pm=0xa11140)`（省電力オフ）を main.py に入れてある。
+  status=1 のまま止まる症状への対策
+- `config.py` は gitignore 対象（WiFi パスワード入り）。雛形は `config.example.py`
+- 動作中の Pico に入るには、USB 挿し直し直後の約10秒以内に Thonny の停止ボタンを連打。
+  入れたら `os.rename('main.py', 'app.py')` → `import app; app.run()` で眠らずに試せる
+  （`import app` は2回目以降読み直さないので、変更後は `machine.soft_reset()` を挟む）
 
 ## git まわりのメモ
 
@@ -222,16 +227,12 @@ SFL の本節は毎週火曜・金曜。試合終了は22時頃なのでその�
 
 ## 残タスク
 
-1. `pico/config.py` に WiFi を書いて `main.py` を Pico へ
-   - **まず `app.py` という名前で手動実行すること。**
-     `main.py` は電源投入で自動実行され、最後に `deepsleep` するので、
-     失敗すると Thonny から触れなくなる
+1. 次の節（Division F 第4節）で自動更新されたか確認する
 2. ケース（3Dプリント）
 3. `fav` ロゴの差し替え（任意）
 4. 4試合目がある節への対応（現状3試合固定）、順位表の表示（未検討）
 5. 電源方式の決定
-6. 掃除: Pico 上の不要な `sfl.py` を削除
-7. workflow の `actions/checkout@v4` / `setup-python@v5` が Node 20 非推奨の警告。
+6. workflow の `actions/checkout@v4` / `setup-python@v5` が Node 20 非推奨の警告。
    今は動くが、いずれ新しいメジャー版へ上げる
 
 ## 進め方
